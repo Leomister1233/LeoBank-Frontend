@@ -1,0 +1,13 @@
+/* GridComponent.css */
+.container-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  
+    grid-template-rows: repeat(4, 100px);
+    gap: 10px;
+}
+
+.container-grid > div {
+    background-color: #6e3a3a;
+    padding: 20px;
+    text-align: center;
+}

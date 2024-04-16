@@ -1,0 +1,45 @@
+.body {
+    margin: 0;
+    padding: 0;
+    background-image: url('Background.jpg'); /* Replace 'path/to/Background.jpg' with the correct path */
+    background-size: cover; /* Cover the entire container */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    height: 100vh; /* Set the height of the container to 100% of the viewport height */
+    display: flex;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+    flex-grow: 1;
+}
+.card {
+    width: 400px;
+    margin: 0 auto; /* Center the card horizontally */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the content horizontally */
+    align-items: center; /* Center the content vertically */
+}
+
+.card-body {
+    width: 200%; /* Adjust width as needed */
+    max-width: 400px; /* Limit the width of the card body */
+    height: auto; /* Remove fixed height */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the content vertically */
+}
+
+.form-group {
+    width: 100%; /* Ensure the form group takes up the full width */
+    margin-bottom: 15px; /* Add some spacing between form groups */
+}
+
+label {
+    text-align: left; /* Align labels to the left */
+    width: 100%; /* Ensure labels take up the full width of the form group */
+}
+input{
+    width:100%;
+}
+
+
