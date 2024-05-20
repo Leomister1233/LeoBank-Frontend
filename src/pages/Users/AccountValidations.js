@@ -34,4 +34,4 @@ function validation(value) {
     return error;
 }
 
-export default validation;
+export default validation

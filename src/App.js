@@ -7,7 +7,7 @@ import Register from './pages/Register';
 import  {Home}  from './pages/Home';
 import { UserHome } from './pages/UserHome';
 import {Users} from './pages/Admin/Users';
-import {Currency} from './pages/Admin/Currency';
+import {Currency} from './pages/Users/Currency';
 import {Help} from './pages/Admin/Help';
 import {AddUser} from "./pages/Admin/AddUser";
 import {Settings} from './pages/Admin/Settings';
@@ -28,6 +28,8 @@ import { Loans } from './pages/Users/Loans';
 import { AccountActivation } from './pages/AccountActivation';
 import { CreateAccountAdmin } from './pages/Admin/CreateAccountAdmin';
 import { PendingRequests } from './pages/Admin/PendingRequests';
+import { SettingsUser } from './pages/Users/SettingsUser';
+import { CurrencyAdmin } from './pages/Admin/CurrencyAdmin';
 
 
 export const RecoveryContext=createContext();
@@ -66,7 +68,10 @@ function App() {
                 <Route path='loans' element={<Loans></Loans>}></Route>
                 <Route path='/activate' element={<AccountActivation></AccountActivation>}></Route> 
                 <Route path='accountcrationadmin' element={<CreateAccountAdmin></CreateAccountAdmin>}></Route>
-                <Route path='pendingrequests' element={<PendingRequests></PendingRequests>}></Route>
+                <Route path='pendingrequests' element={<PendingRequests></PendingRequests>}>
+                </Route>
+                <Route path='settinguser' element={<SettingsUser></SettingsUser>}></Route>
+                <Route path='/currencyadmin' element={<CurrencyAdmin></CurrencyAdmin>}></Route>
           </Routes>
         </RecoveryContext.Provider>
       </BrowserRouter>

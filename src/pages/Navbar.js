@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React,{useState, useEffect} from "react"
 import {Link} from "react-router-dom"
 import navbaricon from "../images/navbaricon.png"
 import login from "../images/login.png"
@@ -6,6 +6,8 @@ import undo from "../images/undo.png"
 import { SideNavBar } from "./SideNavBar"
 import { SideNavBar1 } from "./SideNavBar1"
 import "./Navbar.css"
+import SecureLs from 'secure-ls';
+import axios from 'axios'
 
 
 export const Navbar = () => {
@@ -13,6 +15,40 @@ export const Navbar = () => {
   const [sidebar1,setSidebar1]=useState(false)
   const showSidebar = () => setSidebar(!sidebar)
   const showSidebar1= () => setSidebar1(!sidebar1)
+  const [verified,setVerified]=useState(false);
+  const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+  const key=ls.get('Usermaster');
+  const [imageSrc,setImageSrc]=useState();
+  useEffect(() =>{
+      const fetchImage = async () =>{
+          try{
+            const user_id = encodeURIComponent(key);
+            const response= await axios.get('https://localhost:8801/api/getimagebyId' ,
+            {params:{user_id}, 
+            responseType:'arraybuffer',},{
+              
+            })
+            if(response.status === 200){
+              const contentType = response.headers['content-type'];
+              console.log()
+              const base64String = btoa(
+                  new Uint8Array(response.data).reduce(
+                      (data,byte) => data + String.fromCharCode(byte),
+                  ''
+                  )
+              );
+              const imageUrl = `data:${contentType};base64,${base64String}`
+              setImageSrc(imageUrl);
+              setVerified(true);
+            }else{
+              alert('Something went wrong')
+            }
+          }catch(err){
+            console.error('Error:', err);
+          }
+        }
+        fetchImage();
+  },[])
 
   return (
     <>
@@ -23,9 +59,21 @@ export const Navbar = () => {
             </Link>
         </div>
         <div className="navbar-login" alt="navbar">
-             <Link to="#"> 
-                <img src={login} alt="navbar" onClick={showSidebar1} />
-            </Link>
+        { verified && (
+                <div className="navbar-login" alt="navbar">
+                    <Link to="#"> 
+                        <img src={imageSrc} alt="navbar" onClick={showSidebar1} className='image' />
+                    </Link>
+                </div>
+            )}
+            {!verified && (
+                <div className="navbar-login" alt="navbar">
+                    <Link to="#"> 
+                        <img src={login} alt="navbar" onClick={showSidebar1} />
+                    </Link>
+                </div>
+            )}
+            
         </div>
     </div>
     <nav className={`nav-menu ${sidebar ? 'active' : ''}`} >

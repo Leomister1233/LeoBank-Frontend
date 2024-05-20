@@ -80,36 +80,36 @@ export const Users = () => {
         navigate('/deleteuser')
     }
   return (
-    <div className='home-container'>
+    <div className='info-container'>
         <Navbar1/>
         <form action="">
-            
-        </form>
-        <div className='d-flex vh-100 bg-primary justify-content-center align-items-center'>
-            <div className='w-0 bg-white rounded p-3'>
+            <div>
+              <div><h2>Users</h2></div>
+              <div>
                 <div className='input-container' style={{ display: 'flex', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
-                    <div style={{ marginRight: '10px' }}>
-                        <input className='input-name' type='text' onChange={handlefilter} placeholder='Search By Name' />
-                    </div>
-                     <div style={{ marginRight: '10px' }}>
-                        <input className='input-id' type='text' placeholder="Search By Id" />
-                    </div>
+                  <div style={{ marginRight: '10px' }}>
+                    <input className='input-name' type='text' onChange={handlefilter} placeholder='Search By Name' />
+                  </div>
+                  <div style={{ marginRight: '10px' }}>
+                    <input className='input-id' type='text' placeholder="Search By Id" />
+                  </div>
+                  <div>
+                    <button className='btn btn-success' style={{ marginRight: '10px' }} onClick={handleAdd}>Add +</button>
+                  </div>
+                  <div>
+                    <button className='btn btn-success' onClick={handleDelete}>Delete -</button>
+                  </div>
+                  </div>
                     <div>
-                        <button className='btn btn-success' style={{ marginRight: '10px' }} onClick={handleAdd}>Add +</button>
+                      <DataTable columns={columns}
+                        data={records} 
+                        selectableRows
+                        fixedHeader
+                        pagination/>
                     </div>
-                    <div>
-                        <button className='btn btn-success' onClick={handleDelete}>Delete -</button>
-                    </div>
-                </div>
-                <div>
-                    <DataTable columns={columns}
-                            data={records} 
-                            selectableRows
-                            fixedHeader
-                            pagination/>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
   )
 }

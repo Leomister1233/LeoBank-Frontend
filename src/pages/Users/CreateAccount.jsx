@@ -5,15 +5,16 @@ import '../pagestyle.css';
 import {Navbar} from "../Navbar"; 
 import validation from "./AccountValidations"
 import SecureLs from 'secure-ls';
+import { ENCRYPTION_KEY } from '../../config';
 
 export const CreateAccount = () => {
-  const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+  const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:ENCRYPTION_KEY});
   const key=ls.get('Usermaster');
   const [selectedOption, setSelectedOption]=useState("Please Choose the type of account");
   const [selectedOption1, setSelectedOption1]=useState("Please choose your country");
 
   const [errors,setErrors] = useState({});
-  const options = ["Checking","Savings","Business"]
+  const options = ["Checkings","Savings","Business"]
   const options1 = ["Portugal","Sao Tome and Principe","Cabo Verde","Guine Bissao","Angola"];
   const [values,setValues]=useState({
     user_id:"",
@@ -52,12 +53,11 @@ export const CreateAccount = () => {
         }
     }
     fetchAccounts();
-  })
+  },[])
   const handleSubmit= (e) => {
     e.preventDefault();
     setErrors(validation(values))
-    const full_name = values.full_name;
-    alert(full_name);
+    console.log(key)
     values.user_id=key;
     if(values.account_type!=="" &&values.address!=="" && values.country!=="" && values.user_id!=="" && values.full_name!==""){
         try{
@@ -65,7 +65,7 @@ export const CreateAccount = () => {
         .then(res=>{
             alert("Account added successfully")
             console.log(values)
-            
+             window.location.reload();
         })
         }
         catch (error){
@@ -73,75 +73,59 @@ export const CreateAccount = () => {
         }
   
     }
-    values.user_id="";
-    values.account_type="Please Choose Account type";
-    values.full_name="Client";
-    values.address="";
-    values.country="Please Choose your country";
+   
  } 
     
-
  return (
-    <div >
+    <div className='backbody'>
         <Navbar/>
-        <div className='d-flex vh-100  bg-primary justify-content-center align-items-center'>
-            <div className="container mt-5">
-                <div className="row justify-content-center">
-                    <div className=" cold-md-5">
-                         <div className='card2'>
-                            <form action="">
-                                <div>
-                                    <h2>Create an account</h2>
-                                </div>
+        <div>
+            <div>
+                <form action="">
+                    <div>
+                        <h2>Create an account</h2>
+                    </div>
+                    <div>
+                        <div className="form-group mt-3">
+                            <Dropdown onSelect={onOptionChangeHandler} id='account_type' name='account_type'>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                {selectedOption}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {options.map((option,index)=>{
+                                return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>})}
+                            </Dropdown.Menu>
+                            </Dropdown>
+                            {selectedOption==="Business" && (
                                 <div className="form-group mt-3">
-                                    <div className="form-group mt-3">
-                                        <Dropdown onSelect={onOptionChangeHandler} id='account_type' name='account_type'>
-                                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                                {selectedOption}
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                {options.map((option,index)=>{
-                                                    return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>
-                                                })}
-                                            </Dropdown.Menu>
-                                            </Dropdown>
-                                            {selectedOption==="Business" && (
-                                                <div className="form-group mt-3">
-                                                    <input type='text'
-                                                    id='full_name'
-                                                    name='full_name' placeholder='Company Name'onChange={handleInput}/>
-                                                    {errors.full_name &&<span className='text-danger'>{errors.full_name}</span>}
-                                                </div>
-                                            )}
-                                            
-                                        </div >
-                                        <div className="form-group mt-3">
-                                            <input type='text' placeholder='Address' id='address' name='address' onChange={handleInput}/>
-                                            {errors.address &&<span className='text-danger'>{errors.address}</span>}
-                                        </div>
-                                        <div className="form-group mt-3">
-                                            <Dropdown onSelect={onOptionChangeHandler1}>
-                                                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                                {selectedOption1}  
-                                                </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                {options1.map((option,index)=>{
-                                                    return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>
-                                                })}
-                                                </Dropdown.Menu>
-                                            </Dropdown>
-                                            {errors.country &&<span className='text-danger'>{errors.country}</span>}
-                                        </div>
-                                        <div>
-                                            <button className='btn btn-primary' onClick={handleSubmit}>Create an account</button>
-                                        </div>
-                                    </div>
-                                </form>
+                                    <input type='text' id='full_name' name='full_name' placeholder='Company Name' onChange={handleInput}/>
+                                    {errors.full_name &&<span className='text-danger'>{errors.full_name}</span>}
+                                </div>
+                            )}            
+                        </div >
+                        <div className="form-group mt-3">
+                            <input type='text' placeholder='Address' id='address' name='address' onChange={handleInput}/>
+                            {errors.address &&<span className='text-danger'>{errors.address}</span>}
+                        </div>
+                        <div className="form-group mt-3">
+                            <Dropdown onSelect={onOptionChangeHandler1}>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                {selectedOption1}  
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {options1.map((option,index)=>{
+                                return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>})}
+                            </Dropdown.Menu>
+                            </Dropdown>
+                                {errors.country &&<span className='text-danger'>{errors.country}</span>}
                             </div>
+                        <div>
+                            <button className='btn btn-primary' onClick={handleSubmit}>Create an account</button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div> 
+                </form>
+            </div>             
+        </div>
+    </div> 
     )
 }

@@ -5,9 +5,10 @@ import '../pagestyle.css';
 import {Navbar1} from "../Navbar1"; 
 import validation from "../Users/AccountValidations"
 import SecureLs from 'secure-ls';
+import { ENCRYPTION_KEY } from '../../config';
 
 export const CreateAccountAdmin = () => {
-    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret: ENCRYPTION_KEY });
     const key=ls.get('Usermaster');
     const [selectedOption, setSelectedOption]=useState("Please Choose the type of account");
     const [selectedOption1, setSelectedOption1]=useState("Please choose your country");

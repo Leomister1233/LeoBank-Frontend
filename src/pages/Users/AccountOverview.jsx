@@ -4,11 +4,11 @@ import {Navbar} from "../Navbar";
 import login from "../../images/login.png"
 import axios from 'axios';
 import SecureLs from 'secure-ls';
-
+import { ENCRYPTION_KEY } from '../../config';
 
 export const AccountOverview = () => {
     const [items, setItems] = useState([]);
-    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:ENCRYPTION_KEY});
     const key=ls.get('Usermaster');
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [data ,setdata]=useState([]);
@@ -55,6 +55,7 @@ export const AccountOverview = () => {
         const fetchAccounts = async () =>{
             try{
                 values.user_id = key;
+                console.log(key);
                 const checkResponse= await axios.post("https://localhost:8801/checkaccounts",values)
                 if(checkResponse.data.message==="Account found"){
                     const encodedUser=encodeURI(key);
@@ -96,50 +97,43 @@ export const AccountOverview = () => {
         fetchAccountInfo();
     },[selectedItemId])
 
-    
-
     return (
-        <div className='info-container'>
+        <div className='backbody'>
              <Navbar/>
-        <div className='title-head'>
-            <h1>Account Overview</h1>
-        </div>
-        <div className='info-container'>
+            <div className='title-head'>
+                <h1>Account Overview</h1>
+            </div>
             <div>
-                <h3>Choose from the available Accounts</h3>
+                <div>
+                    <h3>Choose from the available Accounts</h3>
+                </div>
+                <div>
+                    <ul className='list'>
+                        {items.map(item => (
+                            <li key={item.account_id} className='list-child' >
+                                <img src={login} alt='new' style={{ marginRight: '20px' }}/> 
+                                {item.account_id}
+                                <input
+                                    className='input-list'
+                                    type="radio"
+                                    name="account"
+                                    value={item.account_id}
+                                    style={{ marginLeft: '30px' }}
+                                    checked={selectedItemId === item.account_id}
+                                    onChange={() => handleItemClick(item.account_id)}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
-            <div className='radio-container'>
-                <ul className='list'>
-                    {items.map(item => (
-                        <li key={item.account_id} className='list-child' >
-                            <img src={login} alt='new' style={{ marginRight: '25px' }}/> 
-                            {item.account_id}
-                            <input
-                                className='input-list'
-                                type="radio"
-                                name="account"
-                                value={item.account_id}
-                                style={{ marginLeft: '35px' }}
-                                checked={selectedItemId === item.account_id}
-                                onChange={() => handleItemClick(item.account_id)}
-                            />
-                        </li>
-                    ))}
-                </ul>
-            </div>
-           
-        </div>
             <div>
-                <DataTable columns={columns}
-                                data={data} 
-                                selectableRows
-                                fixedHeader
-                                pagination/>
+                <DataTable
+                columns={columns}
+                data={data}
+                pagination
+                    />
             </div>
-        <div>
-
         </div>
-       
-      </div>
     );
 }

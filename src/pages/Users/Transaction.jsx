@@ -6,6 +6,7 @@ import {Navbar} from "../Navbar";
 import validation from "./TransactionValidations"
 import { useNavigate } from 'react-router-dom';
 import SecureLs from 'secure-ls';
+import { ENCRYPTION_KEY } from '../../config';
 
 export const Transaction = () => {
     const [selectedOption, setSelectedOption] = useState("Please choose a transaction");
@@ -15,7 +16,7 @@ export const Transaction = () => {
     const options = ["Payment", "Withdrawal", "Transfer","Deposit"];
     const options2 = ["Utility", "Vendor"];
     const [options3,setOptions3]=useState([])
-    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+    const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret: ENCRYPTION_KEY });
   const key=ls.get('Usermaster');
     const [errors,setErrors] = useState({});
     //const [accountNo,setAccountNo] = useState('');
@@ -151,7 +152,6 @@ export const Transaction = () => {
             console.log("Inputed values ", values.account_id, values.amount);
             console.log("Account updated successfully:", Depositresponse.data);
             alert("Amount Deposited Successfully ")
-                // Reset form fields if needed
             resetForm();
         } 
         catch (error) {
@@ -174,103 +174,91 @@ export const Transaction = () => {
             const transferResponse = await axios.post("https://localhost:8801/transfer",values)
             console.log("Transfer successful:", transferResponse.data);
             alert("Transfer successful ");
-            resetForm();
+            window.location.reload();
         } 
         catch (error) {
             console.error("Error submitting transaction:", error);
         }
     }
-    //navigate('/transaction')
  }
 
   return (
-    <div >
+    <div className='backbody'>
     <Navbar/>
-        <div className='d-flex vh-100  bg-primary justify-content-center align-items-center'>
-            <div className="container mt-5">
-                <div className="row justify-content-center">
-                    <div className=" cold-md-5">
-                        <div className='card2'>
-                            <form action="">
-                                <div>
-                                    <h2> Make a Transaction
-                                    </h2>
+        <div>
+            <div >
+                <form action="">
+                    <div>
+                        <h2> Make a Transaction</h2>
+                    </div>
+                    <div className="form-group mt-3">
+                        <div className="form-group mt-3">
+                            <Dropdown onSelect={onOptionChangeHandler2} id='account_id' name='account_id'>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                {selectedOption2}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {options3.map((option,index) => (
+                                    <Dropdown.Item key={index} eventKey={option.account_id}>{option.account_id}
+                                    </Dropdown.Item>))}
+                            </Dropdown.Menu>
+                            </Dropdown>
+                            {errors.account_id &&<span className='text-danger'>{errors.account_id}</span>}
+                        </div>
+                        <div className="form-group mt-3">
+                            <Dropdown onSelect={onOptionChangeHandler} id='transaction_type' name='transaction_type'>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                {selectedOption}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {options.map((option,index)=>{
+                                return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>})}
+                            </Dropdown.Menu>
+                            </Dropdown>
+                            {errors.transaction_type &&<span className='text-danger'>{errors.transaction_type}</span>}
+                            {selectedOption ==="Payment" && (
+                                <div className="form-group mt-3">
+                                <div className="form-group mt-3">
+                                    <input type="text" placeholder='Name of the company ' id='payee_name' name='payee_name'
+                                    onChange={handleInput}/>
+                                    {errors.payee_name &&<span className='text-danger'>{errors.payee_name}</span>}
                                 </div>
                                 <div className="form-group mt-3">
-                                    <div className="form-group mt-3">
-                                        <Dropdown onSelect={onOptionChangeHandler2} id='account_id' name='account_id'>
-                                        <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                            {selectedOption2}
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                        {options3.map((option,index) => (
-                                            <Dropdown.Item key={index} eventKey={option.account_id}>{option.account_id}</Dropdown.Item>
-                                            ))}
-                                        </Dropdown.Menu>
-                                        </Dropdown>
-                                        {errors.account_id &&<span className='text-danger'>{errors.account_id}</span>}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <Dropdown onSelect={onOptionChangeHandler} id='transaction_type' name='transaction_type'>
-                                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                                {selectedOption}
-                                            </Dropdown.Toggle>
-                                                <Dropdown.Menu>
-                                                    {options.map((option,index)=>{
-                                                        return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>
-                                                    })}
-                                                </Dropdown.Menu>
-                                            </Dropdown>
-                                            {errors.transaction_type &&<span className='text-danger'>{errors.transaction_type}</span>}
-                                            {selectedOption ==="Payment" && (
-                                                <div className="form-group mt-3">
-                                                    <div className="form-group mt-3">
-                                                        <input type="text" placeholder='Name of the company ' id='payee_name' name='payee_name'
-                                                        onChange={handleInput}/>
-                                                        {errors.payee_name &&<span className='text-danger'>{errors.payee_name}</span>}
-                                                    </div>
-                                                    
-                                                    <div className="form-group mt-3">
-                                                        <Dropdown onSelect={onOptionChangeHandler1} id='payee_type' name='payee_type'>
-                                                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                                                {selectedOption1}
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu>
-                                                                {options2.map((option,index)=>{
-                                                                    return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>
-                                                                })}
-                                                            </Dropdown.Menu>
-                                                        </Dropdown>
-                                                        {errors.payee_type &&<span className='text-danger'>{errors.payee_type}</span>}
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {selectedOption!=="Deposit" && selectedOption!=="Withdrawal" &&(
-                                                <div>
-                                                   <div className="form-group mt-3">
-                                                      <input type='text' placeholder='Recipient Account No' id='recipient_account_id' name='recipient_account_id' onChange={handleInput}/>
-                                                      {errors.recipient_account_id &&<span className='text-danger'>{errors.recipient_account_id}</span>}
-                                                    </div>
-                                                </div>
-                                            )}
-                                    </div>
-                                    <div className='form-group mt-3'>
-                                        <input type='number' placeholder='Amount' id='amount' name='amount' onChange={handleInput} />
-                                        {errors.amount && <span className='text-danger'>{errors.amount}</span>}
-                                    </div>
-                                    <div className="form-group mt-3">
-                                        <input type='text' placeholder='Transaction Description (Optional)' id='descriptions' name='descriptions' onChange={handleInput}/>
-                                    </div>
-                                    <div>
-                                        <button className='btn btn-primary' onClick={handleSubmit}>Make the transaction </button>
-                                    </div>
+                                    <Dropdown onSelect={onOptionChangeHandler1} id='payee_type' name='payee_type'>
+                                    <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                        {selectedOption1}
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        {options2.map((option,index)=>{
+                                            return <Dropdown.Item key={index} eventKey={option}>{option}</Dropdown.Item>})}
+                                    </Dropdown.Menu>
+                                    </Dropdown>
+                                    {errors.payee_type &&<span className='text-danger'>{errors.payee_type}</span>}
                                 </div>
-                            </form>
+                                </div>
+                                )}
+                                {selectedOption!=="Deposit" && selectedOption!=="Withdrawal" &&(
+                                <div>
+                                    <div className="form-group mt-3">
+                                        <input type='text' placeholder='Recipient Account No' id='recipient_account_id' name='recipient_account_id' onChange={handleInput}/>
+                                        {errors.recipient_account_id &&<span className='text-danger'>{errors.recipient_account_id}</span>}
+                                </div>
+                            </div>)}
+                        </div>
+                        <div className='form-group mt-3'>
+                            <input type='number' placeholder='Amount' id='amount' name='amount' onChange={handleInput} />
+                            {errors.amount && <span className='text-danger'>{errors.amount}</span>}
+                        </div>
+                        <div className="form-group mt-3">
+                            <input type='text' placeholder='Transaction Description (Optional)' id='descriptions' name='descriptions' onChange={handleInput}/>
+                        </div>
+                        <div>
+                            <button className='btn btn-primary' onClick={handleSubmit}>Make the transaction </button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-        </div>
+        </div>       
     </div> 
   )
 }

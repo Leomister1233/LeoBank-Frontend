@@ -1,13 +1,13 @@
 import React,{useState, useEffect} from 'react';
 import {Navbar} from "../Navbar";
-import { Link } from "react-router-dom";
+import { Link , useNavigate} from "react-router-dom";
 import "../Home.css";
 import "../Navbar.css";
-import verticaldots from "../../images/verticaldots.png";
 import Dropdown from 'react-bootstrap/Dropdown'
 import axios from "axios"
-import DataTable from 'react-data-table-component';
+import DataTable,{createTheme} from 'react-data-table-component';
 import download from "../../images/download.png";
+import { ENCRYPTION_KEY } from '../../config';
 //
 import SecureLs from 'secure-ls';
 
@@ -18,7 +18,8 @@ export const HomeUsers = () => {
   const [balance1,setBalance1]=useState(null);
   const [transactions,setTransactions]=useState();
   const [options,setOptions]=useState([]);
-  const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:'themisterkey1234'});
+  const navigate=useNavigate();
+  const ls= new SecureLs({encodingType:'des', isCompression:false , encryptionSecret:ENCRYPTION_KEY});
   const key=ls.get('Usermaster');
   const [selectedOptions,setSelectedOptions]=useState("Please Select from your available Accounts");
   const [verified,setVerified]=useState(false);
@@ -42,28 +43,47 @@ export const HomeUsers = () => {
   
   useEffect(() => {
     const fetchBalance = async () => {
-        try {
-          values.user_id = key;
-          console.log(key)
-         
-          const checkResponse= await axios.post("https://localhost:8801/checkaccounts",values)
-          if(checkResponse.data.message==="Account found"){
-             const encodedUser = encodeURIComponent(key);
-             const responseAccounts= await  fetch(`https://localhost:8801/api/getaccountsid?user_id=${encodedUser}`)
-            const AccountData= await responseAccounts.json();
-            setOptions(AccountData)
-            console.log("Account retrieved",AccountData);
-            console.log("Options Available", AccountData)
-          } else{
-            alert("No accounts were found, Please create a new account ")
-          }  
-
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
+      try {
+        values.user_id = key;
+        const checkResponse= await axios.post("https://localhost:8801/checkaccounts",values)
+        if(checkResponse.data.message==="Account found"){
+          const encodedUser = encodeURIComponent(key);
+          const responseAccounts= await  fetch(`https://localhost:8801/api/getaccountsid?user_id=${encodedUser}`)
+          const AccountData= await responseAccounts.json();
+          setOptions(AccountData)
+          console.log("Account retrieved",AccountData);
+          console.log("Options Available", AccountData)
+        } else{
+          alert("No accounts were found, Please create a new account ")
+        }  
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
+    const sessionCheck = async () =>{
+      try{
+        const sessionresponse = await fetch('https://localhost:8801/api/checkepiration')
+        if (sessionresponse.status === 200) {
+          const data = await sessionresponse.json();
+          if (data.message === 'Session valid') {
+              console.log('Session is valid');
+          } else {
+              alert('Session expired, Please refresh your credentials');
+              navigate('/');
+          }
+      } else if (sessionresponse.status === 401) {
+          alert('Session expired, Please refresh your credentials');
+          navigate('/');
+      } else {
+          console.error('Error checking session:', sessionresponse.statusText);
+      }
+      }catch(err){
+        console.log("Error fetching",err);
+      }
+    }
     fetchBalance();
-  }, [values,key]); // Empty dependency array to ensure the effect runs only once on component mount
+   // sessionCheck();
+  }, []); // Empty dependency array to ensure the effect runs only once on component mount
 
   const openModal =() =>{
     setIsModalOpen(true); // Make
@@ -98,9 +118,8 @@ export const HomeUsers = () => {
         if (verified) {
           handleOptionsSelected(selectedOptions);
           closeModal();
-
         }
-      }, [verified, selectedOptions]);
+      }, [verified, selectedOptions,]);
 
  
   const  handleOptionsSelected = async (selectedOptions)=>{
@@ -124,14 +143,13 @@ export const HomeUsers = () => {
       console.log('Data from balance fetch:', balanceData);
       
       const transactionResponse = await fetch(`https://localhost:8801/api/getUsertransaction?account_id=${encodedUser}`);
-
-      if (!transactionResponse.ok) {
-        throw new Error('Network response was not ok');
-      }
-
       const transactionData = await transactionResponse.json();
-      setTransactions(transactionData);
-      console.log('Data from transaction fetch:', transactionData);
+      if (transactionData.message==='No transactions found for the account_id') {
+        console.log('Data not available yet');
+      }else{
+        setTransactions(transactionData);
+        console.log('Data from transaction fetch:', transactionData);
+      }
     }
   }
 
@@ -217,45 +235,55 @@ export const HomeUsers = () => {
       }
       catch(error){
           console.error("Error submitting transaction: ", error)
-      }
-   
-    
+      } 
   }
+
+  createTheme('solarized2',{
+    background:{
+      default:'rgb(221, 234, 235)'
+    },
+    context:{
+      background:'#cb4b16',
+      text:'#FFFFFF'
+    },
+    divider:{
+      default:'#073642',
+    }
+  })
+
   return ( 
-      <div className='home-container'>
+    <div className='backbody'>
         <Navbar/>
-        <div>
-          
-          <form action="" >
-            <div className='title-head'>
-              <h1>Welcome to the Bank of Leo </h1>
-            </div>
-            <div className='container'>
-              <div className='bank-balance'>
+      <div className='backbody'>
+        <form action="" >
+          <div className='title-head'>
+            <h1>Welcome to the Bank of Leo </h1>
+          </div>
+          <div className='container'>
+            <div className='bank-balance'>
               <div className='tag' >
-                <h1></h1>
-                <img src={verticaldots} alt='new'></img>
+                <h1>Check Balance</h1>
               </div>
               <div >
-                  <div className='balance-select'>
-                    <img src={download} alt='hello'/>
-                  </div>
-                  <div className='balance-select'>
-                    <Dropdown onSelect={handleOptionsSelected} id='account_id' name='account_id'>
-                      <Dropdown.Toggle>
-                        {selectedOptions}
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {options.map((options, index)=>(
-                          <Dropdown.Item key={index} eventKey={options.account_id}>
-                              {options.account_id}
-                          </Dropdown.Item>
+                <div className='balance-select'>
+                  <img src={download} alt='hello'/>
+                </div>
+                <div className='balance-select'>
+                  <Dropdown onSelect={handleOptionsSelected} id='account_id' name='account_id'>
+                    <Dropdown.Toggle>
+                      {selectedOptions}
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {options.map((options, index)=>(
+                        <Dropdown.Item key={index} eventKey={options.account_id}>
+                          {options.account_id}
+                        </Dropdown.Item>
                         ))}
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                  </div>
-                  { verified &&(
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+                { verified &&(
                   <div>
                     <h1>Balance:</h1>
                     <div className='balance-display'>
@@ -280,84 +308,87 @@ export const HomeUsers = () => {
                 </div>
                 <div>
                   <div>
-                    {clickedbutton==="payment" && verified && (
+                  {clickedbutton==="payment" && verified && (
+                    <div>
+                      <div className="form-group mt-3">
+                        <input type='text' placeholder='Name of the Company' onChange={handleInput}/>
+                      </div>
+                      <div className="form-group mt-3">
+                        <input type='text' placeholder='Type of Company' onChange={handleInput}/>
+                      </div>
+                      <div className="form-group mt-3">
+                        <input type='text' placeholder='Recipients Account' onChange={handleInput}/>
+                      </div>
+                      <div className="form-group mt-3">
+                        <input type='number' placeholder='Amount' onChange={handleInput}/>
+                      </div>
+                      <div className="form-group mt-3"> 
+                        <input type='text' placeholder='Transaction Description (Optional)' onChange={handleInput}/>
+                      </div>
                       <div>
-                        <div className="form-group mt-3">
-                          <input type='text' placeholder='Name of the Company' onChange={handleInput}/>
-                        </div>
-                        <div className="form-group mt-3">
-                          <input type='text' placeholder='Type of Company' onChange={handleInput}/>
-                        </div>
-                        <div className="form-group mt-3">
-                          <input type='text' placeholder='Recipients Account' onChange={handleInput}/>
-                        </div>
-                        <div className="form-group mt-3">
-                          <input type='number' placeholder='Amount' onChange={handleInput}/>
-                        </div>
-                        <div className="form-group mt-3"> 
-                          <input type='text' placeholder='Transaction Description (Optional)' onChange={handleInput}/>
-                        </div>
-                        <div>
-                          <button className='btn btn-primary ' onClick={handlePayment}> Complete Payment </button>
-                        </div>
+                        <button className='btn btn-primary ' onClick={handlePayment}> Complete Payment </button>
                       </div>
-                    )}{clickedbutton==="payment" && !verified &&(
-                      <div className='balance-select'>Please First Choose an Account!</div>
-                    )}
-                    {clickedbutton==="transfer" &&verified && (
-                      <div className="container mt-5">
-                        <div className="form-group mt-3">
-                          <input type='text' placeholder='Recipients Account' onChange={handleInput}/>
-                        </div>
-                        <div className="form-group mt-3">
-                          <input type='number' placeholder='Amount' onChange={handleInput} />
-                        </div>
-                        <div>
-                          <button className='btn btn-primary ' onClick={handleTransfer}> Complete Transfer </button>
-                        </div>
+                    </div>
+                  )}
+                  {clickedbutton==="payment" && !verified &&(
+                    <div className='balance-select'>Please First Choose an Account!</div>
+                  )}
+                  {clickedbutton==="transfer" &&verified && (
+                    <div className="container mt-5">
+                      <div className="form-group mt-3">
+                        <input type='text' placeholder='Recipients Account' onChange={handleInput}/>
                       </div>
-                    )}
-                    {clickedbutton==="transfer" && !verified &&(
-                      <div className='balance-select'>Please First Choose an Account!</div>
-                    )}
-                  </div> 
-                  <div className='container mt-5'>
-                    <Link to='/transaction'>More Transactions Options</Link>
-                  </div>
+                      <div className="form-group mt-3">
+                        <input type='number' placeholder='Amount' onChange={handleInput} />
+                      </div>
+                      <div>
+                          <button className='btn btn-primary ' onClick={handleTransfer}> Complete Transfer
+                          </button>
+                      </div>
+                    </div>
+                  )}
+                  {clickedbutton==="transfer" && !verified &&(
+                  <div className='balance-select'>Please First Choose an Account!</div>
+                )}
+                </div> 
+                <div className='container mt-5'>
+                  <Link to='/transaction'>More Transactions Options</Link>
                 </div>
               </div>
             </div>
-            
-           <div className='recent-activity'>
-              <h2>Recent Transaction History</h2>
-              <div>
-                <DataTable 
+          </div>
+          <div className='recent-activity'>
+            <h2>Recent Transaction History</h2>
+            <div>
+              <DataTable 
                 columns={columns}
                 data={transactions}
                 selectableRows
                 fixedHeader
-                pagination/>
-              </div>
-              <div className="form-group mt-3">
-                  <Link>More </Link>
-                </div>
+                pagination
+                theme="solarized2"
+                />
             </div>
-            {isModalOpen && (
-              <div className='floating'>
-                  <div className='title'>
-                      <h2>Password Confirmation</h2>
-                  </div>
-                  <div className='title-div'>
-                    <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Insert your User password'/>
-                  </div>
-                  <div className='title-btn'>
-                    <button className='btn btn-primary' onClick={handlePasswordConfirm}> Confirm </button>
-                    <button className='btn btn-secondary' onClick={closeModal}> Cancel </button>
-                  </div>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>       
+            <div className="form-group mt-3">
+              <Link>More </Link>
+            </div>
+          </div>
+          {isModalOpen && (
+          <div className='floating'>
+            <div >
+              <h2>Password Confirmation</h2>
+            </div>
+            <div >
+              <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder='Insert your User password'/>
+            </div>
+            <div >
+              <button className='btn btn-primary' onClick={handlePasswordConfirm}> Confirm </button>
+                <button className='btn btn-secondary' onClick={closeModal}> Cancel </button>
+            </div>
+          </div>
+          )}
+        </form>
+      </div>
+    </div>       
   )
 }

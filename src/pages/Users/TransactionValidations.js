@@ -99,8 +99,6 @@ function validation(value) {
             error.amount="";
         }
     }
-
     return error;
 }
-
 export default validation;

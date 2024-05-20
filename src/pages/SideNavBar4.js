@@ -1,11 +1,12 @@
 import React from 'react'
 import adjust from "../images/adjust.png"
 import logout from "../images/logout.png"
+import SecureLS from 'secure-ls'
 
 export const SideNavBar4 = [
     {
-        title:'Personalize',
-        path:'/personalization',
+        title:'Settings',
+        path:'/settings',
         icon:<img src={adjust} alt="navbar"/>,
         cname:"nav-text"
     },
@@ -13,6 +14,10 @@ export const SideNavBar4 = [
         title:'Logout',
         path:'/',
         icon:<img src={logout} alt="navbar"/>,
-        cname:"nav-text"
+        cname:"nav-text",
+        onClick: () => {
+            const ls = new SecureLS();
+            ls.remove('Usermaster');
+        }
     }
 ]

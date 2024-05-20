@@ -21,20 +21,16 @@ export const Otp = ({email}) => {
         }));
     }
     const navigate= useNavigate();
-    const resendOTP = (e) => { 
+    const resendOTP = async (e) => { 
         const OTP = Math.floor(Math.random() * 9000 + 1000);
         console.log(OTP);
         e.preventDefault();
         values.otp='';
         if(values.otp === ""){
-            axios.post("http://localhost:8801/send_recovery_email", {
-                OTP,
-                recipient_email: email,
-            })
-            axios.post("http://localhost:8801/updateOtp",{
-                OTP,
-                recipient_email:email
-            })
+            const OTPresponse= await axios.post("https://localhost:8801/recoverotp",values)
+            if(OTPresponse.status===200){
+                alert('The recover code was sent to your email box');
+            }
         }
     }    
 

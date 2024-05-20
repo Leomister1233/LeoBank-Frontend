@@ -1,13 +1,11 @@
 .body {
-    margin: 0;
-    padding: 0;
-    background-image: url('Background.jpg'); /* Replace 'path/to/Background.jpg' with the correct path */
+    background-color: #84abc9a2;/* Replace 'path/to/Background.jpg' with the correct path */
     background-size: cover; /* Cover the entire container */
     background-position: center; /* Center the background image */
     background-repeat: no-repeat; /* Prevent the background image from repeating */
     height: 100vh; /* Set the height of the container to 100% of the viewport height */
     display: flex;
-    justify-content: center; /* Center the content horizontally */
+     /* Center the content horizontally */
     align-items: center; /* Center the content vertically */
     flex-grow: 1;
 }
