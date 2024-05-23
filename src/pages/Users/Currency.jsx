@@ -5,7 +5,6 @@ import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DataTable, {createTheme} from 'react-data-table-component';
 import chinese from "../../images/chinese.png";
-import stp from "../../images/stp.png";
 import eu from "../../images/eu.png";
 import usa from "../../images/usa.png";
 import brazil from "../../images/brazil.png";
@@ -15,14 +14,15 @@ import japan from "../../images/japan.png";
 export const Currency = () => {
   const [values,setValues]=useState({
     value1:'',
-    value2:'',
+    value2:'0',
     rates:'',
     currencies:"",
     converted_currency:""
   })
   const [options,setOptions] =useState([]);
   const [selectedOption, setSelectedOption] = useState("Please choose a transaction");
-    const [selectedOption1, setSelectedOption1] = useState("Please select the type of company");
+  const [selectedOption1, setSelectedOption1] = useState("Please select the type of company");
+  const [result,setresult] = useState(0);
 
     useEffect(() => {
       const fetchRates = async()=>{
@@ -39,8 +39,12 @@ export const Currency = () => {
         ...prev,
         [e.target.name]: e.target.value
     }));
+    
   }
 
+  const updateInputValue = (newValue) => {
+    setresult(newValue);
+  };
 
   const columns = [
     {
@@ -102,44 +106,25 @@ export const Currency = () => {
     setSelectedOption1(selectedOption1);
   };
 
+  const ratesMap = options.reduce((map, option) => {
+    map[option.currency] = option.rates;
+    return map;
+  }, {});
+
   const handleSubmit = async (e)=>{
     e.preventDefault();
      console.log('2',options.currency);
     try{
-      if(values.currencies!==values.converted_currency){
-        if(values.converted_currency === 'US Dollar'){
-          const rates=parseFloat(options[0].rates)
-          const values1=parseFloat(values.value1)
-          const result = rates * values1
-          values.value2 = result
-        }
-        if(values.converted_currency === 'Chinese Yuan Renminbi'){
-          const rates=options[1].rates
-          const values1=parseFloat(values.value1)
-          const result = rates * values1
-          values.value2 = result
-        }
-        if(values.converted_currency === 'Canadian Dollar'){
-          const rates=options[2].rates
-          const values1=parseFloat(values.value1)
-          const result = rates * values1
-          values.value2 = result
-        }
-        if(values.converted_currency === 'Japanese Yen'){
-          const rates=options[3].rates
-          const values1=parseFloat(values.value1)
-          const result = rates * values1
-          values.value2 = result
-        }
-        if(values.converted_currency === 'Brazilian Real'){
-          const rates=options[4].rates
-          const values1=parseFloat(values.value1)
-          const result = rates * values1
-          values.value2 = result
-        }
-      }
+        const fromRate=ratesMap[values.currencies];
+        console.log(fromRate);
+        const toRate= ratesMap[values.converted_currency];
+        console.log(toRate);
+        const result= (parseFloat(values.value1)/parseFloat(fromRate)) * parseFloat(toRate)
+        values.value2=result;
+        console.log(result);
+        updateInputValue(result)
     }catch(err){
-      console.err('Error',err)
+      console.log('Error',err)
     }
   }
 
@@ -185,7 +170,7 @@ export const Currency = () => {
             </Dropdown>
             </div>
             <div style={{ marginTop: '10px' }}>
-              <input placeholder='insert a value' name="value2" id='value2' onChange={handleInput}/>
+              <input placeholder='insert a value' name="value2" id='value2' value={result} onChange={updateInputValue}/>
             </div>
           </div>
         </div>
@@ -199,7 +184,6 @@ export const Currency = () => {
           columns={columns}
           theme="solarized" 
           pagination/>
-          
         </div>
       </form>
     </div>
