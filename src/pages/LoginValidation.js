@@ -1,6 +1,7 @@
 function validation(value) {
     let error ={}
     const password_pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/
+    const otp_pattern = /^\d{4}$/;
 
     if(value.username===""){
         error.username="Name should not be empty"
@@ -16,6 +17,14 @@ function validation(value) {
         error.password=""
     }
 
+    if(value.pin===""){
+        error.pin = "PIN should not be empty";
+    }else if (!otp_pattern.test(value.pin)) {
+      error.pin = "Pin should be a 4-digit number";
+    }
+    else{
+      error.pin=""
+    }
     return error;
 }
 export default validation

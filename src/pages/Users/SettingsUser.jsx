@@ -29,6 +29,8 @@ export const SettingsUser = () => {
     email:'',
     pin:'',
     confirmpin:'',
+    transaction_code:'',
+    confirm_transaction_code:''
   });
 
   const [image,setImage]=useState();
@@ -171,7 +173,7 @@ export const SettingsUser = () => {
     setErrors(validation(values));
     console.log(errors.pin)
     try{ 
-      if(errors.pin===""  && errors.question===""){
+      if(errors.pin===""  && errors.question==="" && errors.transaction_code===""){
         const sendpininfo= await axios.post('https://localhost:8801/updatepin',values);
         const sendsecurity = await axios.post('https://localhost:8801/updatequestions',values);
         if(sendpininfo.status===200 &&  sendsecurity.status===200){
@@ -251,11 +253,11 @@ export const SettingsUser = () => {
                   <div className='card2'>
                     <div className="card-body">
                       <div className='form-group mt-3 '>
-                        <input type='password' name='pin' id='pin' placeholder='Please create a new pin' onChange={handleInput}/>
+                        <input type='password' name='pin' id='pin' placeholder='Please create a new login pin' onChange={handleInput}/>
                         {errors.pin &&<span className='text-danger'>{errors.pin}</span>}
                       </div >
                       <div className='form-group mt-3'>
-                        <input type='password' name='confirmpin' id='confirmpin' placeholder='Please confirm the pin' onChange={handleInput}/>
+                        <input type='password' name='confirmpin' id='confirmpin' placeholder='Please confirm the login pin' onChange={handleInput}/>
                         {errors.confirmpin &&<span className='text-danger'>{errors.confirmpin}</span>}
                       </div>
                       <div className='form-group mt-3'>
@@ -265,6 +267,15 @@ export const SettingsUser = () => {
                       <div className='form-group mt-3'>
                         <input placeholder='Create and security answer' name='answer' id='answer' onChange={handleInput}/>
                         {errors.answer &&<span className='text-danger'>{errors.answer}</span>}
+                      </div>
+                      <div className='form-group mt-3'>
+                        <input type="password" placeholder='Create the
+                          Transaction Code' id='transaction_code' name='transaction_code' onChange={handleInput}/>
+                        {errors.transaction_code &&<span className='text-danger'>{errors.transaction_code}</span>}
+                      </div>
+                      <div className='form-group mt-3'>
+                        <input type="password" placeholder='Confirm the Transaction Code' id='confirm_transaction_code' name='confirm_transaction_code' onChange={handleInput}/>
+                        {errors.confirm_transaction_code &&<span className='text-danger'>{errors.confirm_transaction_code}</span>}
                       </div>
                       <div>
                         <button className='btn btn-primary' onClick={handlesecurity}>Confirm</button>

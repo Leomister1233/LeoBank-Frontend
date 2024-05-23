@@ -5,7 +5,7 @@ function validation(value) {
     const amount_pattern=/^\d+$/
     const validTransactionType = ["Payment", "Withdrawal", "Transfer","Deposit"];
     const validVendorType = ["Utility", "Vendor"];
-
+    const otp_pattern = /^\d{4}$/;
 
     if(value.account_id ==="Please select an account"){
         error.account_id = "Please select an Account Number"; 
@@ -99,6 +99,16 @@ function validation(value) {
             error.amount="";
         }
     }
+
+    if(value.transaction_code===""){
+        error.transaction_code = "This field should not be empty";
+      }else if (!otp_pattern.test(value.transaction_code)) {
+        error.transaction_code = "Transaction Code should be a 4-digit number";
+      }
+      else{
+      error.transaction_code=""
+      }
+
     return error;
 }
 export default validation;

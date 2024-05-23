@@ -67,6 +67,8 @@ function validation(value) {
         error.pin = "PIN should not be empty";
     }else if(value.pin !== value.confirmpin){
         error.pin ="the pins should match"
+    }else if (!otp_pattern.test(value.pin)) {
+      error.pin = "Pin should be a 4-digit number";
     }
     else{
       error.pin=""
@@ -76,8 +78,31 @@ function validation(value) {
         error.confirmpin="This should not be empty"
     }else if(value.pin !== value.confirmpin){
         error.confirmpin ="the pins should match"
+    }else if (!otp_pattern.test(value.confirmpin)) {
+      error.confirmpin = "Confirm Pin should be a 4-digit number";
     }else{
       error.confirmpin = "";
+    }
+
+    if(value.transaction_code===""){
+      error.transaction_code = "This field should not be empty";
+    }else if(value.transaction_code !== value.confirm_transaction_code){
+      error.transaction_code ="the codes should match"
+    }else if (!otp_pattern.test(value.transaction_code)) {
+      error.transaction_code = "Transaction Code should be a 4-digit number";
+    }
+    else{
+    error.transaction_code=""
+    }
+
+    if(value.confirm_transaction_code===""){
+      error.confirm_transaction_code="This field should not be empty"
+    }else if(value.transaction_code !== value.confirm_transaction_code){
+      error.confirm_transaction_code ="the codes should match"
+    }else if (!otp_pattern.test(value.confirm_transaction_code)) {
+      error.confirm_transaction_code = "Transaction Code should be a 4-digit number";
+    }else{
+      error.confirm_transaction_code = "";
     }
 
     return error;

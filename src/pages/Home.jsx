@@ -114,6 +114,11 @@ export const Home = () => {
         sortable: true
     },
     {
+      name:"amount",
+      selector: row=> row.amount,
+      sortable: true
+    },
+    {
       name:"description",
       selector: row=> row.description,
       sortable: true
