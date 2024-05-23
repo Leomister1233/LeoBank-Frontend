@@ -26,8 +26,8 @@
     "react-toastify": "^10.0.4",
     "secure-ls": "^1.2.6",
     "styled-components": "^6.1.8",
-    "web-vitals": "^2.1.4",
-    "type":"module"
+    "web-vitals": "^2.1.4"
+  
   },
   "scripts": {
     "start": "react-scripts start",
