@@ -1,4 +1,5 @@
 import React from 'react';
+import { Analytics } from "@vercel/analytics/react"
 import { useState } from "react";
 import { createContext } from 'react';
 import './App.css';
@@ -41,10 +42,11 @@ function App() {
   
   return (
    <div className="App">
-
+      <Analytics/>
       <BrowserRouter>
         <RecoveryContext.Provider value={{email,setEmail}}>
           <Routes>
+            
                 <Route path="/" element={<Login/>} ></Route>
                 <Route path="/register" element={<Register/>}></Route>
                 <Route path="/home" element={<Home/>}></Route>
