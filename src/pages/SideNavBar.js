@@ -48,7 +48,7 @@ export const SideNavBar =[
     },
     {
         title:'Help',
-        path:'/help',
+        path:'/userhelp',
         icon:<img src={help1} alt="navbar"/>,
         cname:"nav-text"
     },

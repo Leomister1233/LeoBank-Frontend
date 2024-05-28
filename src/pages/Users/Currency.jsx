@@ -10,18 +10,20 @@ import usa from "../../images/usa.png";
 import brazil from "../../images/brazil.png";
 import canada from "../../images/canada.png";
 import japan from "../../images/japan.png";
+import validation from "./CurrencyValidations";
 
 export const Currency = () => {
   const [values,setValues]=useState({
     value1:'',
     value2:'0',
     rates:'',
-    currencies:"",
-    converted_currency:""
+    currencies:'',
+    converted_currency:''
   })
+  const [errors,setErrors] = useState({});
   const [options,setOptions] =useState([]);
-  const [selectedOption, setSelectedOption] = useState("Please choose a transaction");
-  const [selectedOption1, setSelectedOption1] = useState("Please select the type of company");
+  const [selectedOption, setSelectedOption] = useState("Please select a currency");
+  const [selectedOption1, setSelectedOption1] = useState("Please select a currency");
   const [result,setresult] = useState(0);
 
     useEffect(() => {
@@ -113,16 +115,23 @@ export const Currency = () => {
 
   const handleSubmit = async (e)=>{
     e.preventDefault();
-     console.log('2',options.currency);
+    setErrors(validation(values));
+    if(errors.converted_currency==='' && errors.currencies === '' )
     try{
         const fromRate=ratesMap[values.currencies];
         console.log(fromRate);
         const toRate= ratesMap[values.converted_currency];
         console.log(toRate);
-        const result= (parseFloat(values.value1)/parseFloat(fromRate)) * parseFloat(toRate)
-        values.value2=result;
-        console.log(result);
-        updateInputValue(result)
+        if(fromRate === toRate ){
+          alert('Please choose two different currencies')
+        }
+        if(fromRate === undefined || toRate=== undefined){
+          alert('Please make sure to choose both currencies')
+        }else{
+          const result= (parseFloat(values.value1)/parseFloat(fromRate)) * parseFloat(toRate)
+          values.value2=result;
+          updateInputValue(result)
+        }
     }catch(err){
       console.log('Error',err)
     }
@@ -141,7 +150,7 @@ export const Currency = () => {
         <div className='tag1'>
           <div >
             <div >
-            <Dropdown onSelect={onOptionChangeHandler} id='transaction_type' name='transaction_type'>
+            <Dropdown onSelect={onOptionChangeHandler} id='currencies' name='currencies'>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 {selectedOption}
               </Dropdown.Toggle>
@@ -151,14 +160,16 @@ export const Currency = () => {
                 })}
               </Dropdown.Menu>
             </Dropdown>
+            {errors.currencies &&<span className='text-danger'>{errors.currencies}</span>}
             </div>
             <div style={{ marginTop: '10px' }}>
               <input placeholder='insert a value' name='value1' id='value1' onChange={handleInput}/>
+              {errors.value1 &&<span className='text-danger'>{errors.value1}</span>}
             </div>
           </div>
           <div>
             <div>
-            <Dropdown onSelect={onOptionChangeHandler1} id='transaction_type' name='transaction_type'>
+            <Dropdown onSelect={onOptionChangeHandler1} id='converted_currency' name='converted_currency'>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 {selectedOption1}
               </Dropdown.Toggle>
@@ -168,6 +179,7 @@ export const Currency = () => {
                 })}
               </Dropdown.Menu>
             </Dropdown>
+            {errors.converted_currency &&<span className='text-danger'>{errors.converted_currency}</span>}
             </div>
             <div style={{ marginTop: '10px' }}>
               <input placeholder='insert a value' name="value2" id='value2' value={result} onChange={updateInputValue}/>

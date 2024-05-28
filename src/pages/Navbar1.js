@@ -46,7 +46,7 @@ export const Navbar1 = () => {
                 alert('Something went wrong')
               }
             }catch(err){
-              console.error('Error:', err);
+              console.log('Error:', err);
             }
           }
           fetchImage();

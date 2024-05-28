@@ -32,7 +32,6 @@ export const Home = () => {
           const fetchUsers= await fetch('https://localhost:8801/api/userslimit')
           const getusers = await fetchUsers.json()
           setUsers(getusers);
-          console.log(users)
           const fetchaccounts = await fetch('https://localhost:8801/api/getaccountslimit')
           const getaccounts= await fetchaccounts.json(); 
           setAccount(getaccounts)
@@ -40,7 +39,7 @@ export const Home = () => {
           const gettransaction = await fetchtransactions.json();
           setTransactions(gettransaction)
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.log('Error fetching data:', error);
       }
     };
     fetchBalance();

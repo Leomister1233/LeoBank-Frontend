@@ -30,6 +30,7 @@ import { CreateAccountAdmin } from './pages/Admin/CreateAccountAdmin';
 import { PendingRequests } from './pages/Admin/PendingRequests';
 import { SettingsUser } from './pages/Users/SettingsUser';
 import { CurrencyAdmin } from './pages/Admin/CurrencyAdmin';
+import { UserHelp } from './pages/Users/UserHelp';
 
 
 export const RecoveryContext=createContext();
@@ -72,6 +73,7 @@ function App() {
                 </Route>
                 <Route path='settinguser' element={<SettingsUser></SettingsUser>}></Route>
                 <Route path='/currencyadmin' element={<CurrencyAdmin></CurrencyAdmin>}></Route>
+                <Route path='userhelp' element={<UserHelp></UserHelp>}></Route>
           </Routes>
         </RecoveryContext.Provider>
       </BrowserRouter>
